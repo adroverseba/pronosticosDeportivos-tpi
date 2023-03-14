@@ -29,7 +29,7 @@ sumarán puntos y se obtendrá un listado final.
 A continuación, se propone un diagrama de clases inicial que puede ser modificado en
 cualquier momento.
 
-![diagramaObj](./assets/img/diagramaDeObjetos.png)
+<p align="center" ><img src="./assets/img/diagramadeObjetos.png" style="max-width:80%"></p>
 
 ### Entrega 1
 
