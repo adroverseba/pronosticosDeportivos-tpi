@@ -1,1 +1,1 @@
-Argentina,2,Croacia,0
+Argentina,0,Croacia,2

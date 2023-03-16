@@ -43,17 +43,16 @@ public class Main {
 
         int puntajeTotal = 0;
         for (Pronostico pronostico : pronosticos) {
-            Partido partido = pronostico.getPartido();
+//            Partido partido = pronostico.getPartido();
             Equipo equipoPronostico = pronostico.getEquipo();
-            System.out.println("equipoPronostico: " + equipoPronostico);
 
             ResultadoEnum resultadoReal = resultados.get(equipoPronostico.getNombre());
-            System.out.println("Resultado real: " + resultadoReal);
+            System.out.println("\nPrediccion realizada : " + equipoPronostico.getNombre() + " " + pronostico.getResultado());
 
             if (resultadoReal == pronostico.getResultado()) {
                 int puntos = pronostico.puntos();
                 puntajeTotal += puntos;
-                System.out.println("puntos: "+puntos);
+                System.out.println("puntos: " + puntos);
                 System.out.println("Pronostico acertado");
             } else {
                 System.out.println("Pronostico fallido");
