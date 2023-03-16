@@ -16,6 +16,11 @@ public class Partido {
         this.golesEquipo2 = golesEquipo2;
     }
 
+    /**
+     * Devuelve el resultado del partido para un equipo dado.
+     * @param equipo el equipo del que se quiere obtener el resultado
+     * @return el resultado del partido para el equipo especificado
+     */
     public ResultadoEnum resultado(Equipo equipo) {
         if (equipo == equipo1) {
             if (golesEquipo1 > golesEquipo2) {

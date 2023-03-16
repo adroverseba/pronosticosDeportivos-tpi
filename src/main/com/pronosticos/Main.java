@@ -15,42 +15,52 @@ public class Main {
 
     public static void main(String[] args) {
         //verificar que se pasen los parametros necesarios
-        if (args.length < 2) {
-            System.out.println("Debe espicificar el nombre de los archivos de pronostico y resultado.");
-            return;
-        }
+//        if (args.length < 2) {
+//            System.out.println("Debe espicificar el nombre de los archivos de pronostico y resultado.");
+//            return;
+//        }
 
         //obtengo las rutas de los archivos
-        String rutaPartidos = args[0];
-        String rutaPronosticos = args[1];
+//        String rutaPartidos = args[0];
+//        String rutaPronosticos = args[1];
+        String rutaPartidos = "src/data/resultado.txt";
+        String rutaPronosticos = "src/data/pronostico.txt";
 
         //leer los archivos y crear las instancias necesarias
         List<Partido> partidos = leerPartidos(rutaPartidos);
         List<Pronostico> pronosticos = leerPronosticos(rutaPronosticos, partidos);
 
         //calcular el puntaje de cada pronostico
-        Map<Equipo, ResultadoEnum> resultados = new HashMap<>();
+        Map<String, ResultadoEnum> resultados = new HashMap<>();
         for (Partido partido : partidos) {
-            resultados.put(partido.getEquipo1(), partido.resultado(partido.getEquipo1()));
-            resultados.put(partido.getEquipo2(), partido.resultado(partido.getEquipo2()));
+            resultados.put(partido.getEquipo1().getNombre(), partido.resultado(partido.getEquipo1()));
+            resultados.put(partido.getEquipo2().getNombre(), partido.resultado(partido.getEquipo2()));
+        }
+
+        for (Map.Entry<String, ResultadoEnum> entry : resultados.entrySet()) {
+            System.out.println("Equipo: " + entry.getKey() + ", Resultado: " + entry.getValue());
         }
 
         int puntajeTotal = 0;
         for (Pronostico pronostico : pronosticos) {
             Partido partido = pronostico.getPartido();
             Equipo equipoPronostico = pronostico.getEquipo();
-            ResultadoEnum resultadoReal = resultados.get(pronostico.getEquipo());
+            System.out.println("equipoPronostico: " + equipoPronostico);
+
+            ResultadoEnum resultadoReal = resultados.get(equipoPronostico.getNombre());
+            System.out.println("Resultado real: " + resultadoReal);
+
             if (resultadoReal == pronostico.getResultado()) {
                 int puntos = pronostico.puntos();
                 puntajeTotal += puntos;
+                System.out.println("puntos: "+puntos);
                 System.out.println("Pronostico acertado");
             } else {
                 System.out.println("Pronostico fallido");
             }
         }
-        System.out.println("Puntaje Total: "+puntajeTotal);
-        
-        
+        System.out.println("Puntaje Total: " + puntajeTotal);
+
     }
 
     /**
@@ -67,9 +77,9 @@ public class Main {
             while ((linea = lector.readLine()) != null) {
                 String[] datos = linea.split(",");
                 Equipo equipo1 = new Equipo(datos[0], "");
-                Equipo equipo2 = new Equipo(datos[1], "");
-                int golesEquipo1 = Integer.parseInt(datos[3]);
-                int golesEquipo2 = Integer.parseInt(datos[4]);
+                Equipo equipo2 = new Equipo(datos[2], "");
+                int golesEquipo1 = Integer.parseInt(datos[1]);
+                int golesEquipo2 = Integer.parseInt(datos[3]);
                 Partido partido = new Partido(equipo1, equipo2, golesEquipo1, golesEquipo2);
                 partidos.add(partido);
             }
@@ -91,6 +101,7 @@ public class Main {
                 ResultadoEnum resultadoEnum = ResultadoEnum.valueOf(datos[1]);
                 Partido partido = buscarPartido(partidos, datos[2], datos[3]);
                 if (partido != null) {
+//                System.out.println("partido: "+ partido.getEquipo1().getNombre()+" "+ partido.getEquipo2().getNombre());
                     Pronostico pronostico = new Pronostico(partido, equipo, resultadoEnum);
                     pronosticos.add(pronostico);
                 }
@@ -113,7 +124,7 @@ public class Main {
      */
     private static Partido buscarPartido(List<Partido> partidos, String equipo1, String equipo2) {
         for (Partido partido : partidos) {
-            if (partido.getEquipo1().getNombre().equals(equipo1) && partido.getEquipo1().getNombre().equals(equipo2)) {
+            if (partido.getEquipo1().getNombre().equals(equipo1) && partido.getEquipo2().getNombre().equals(equipo2)) {
                 return partido;
             }
         }

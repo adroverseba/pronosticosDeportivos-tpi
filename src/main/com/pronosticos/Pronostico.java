@@ -15,11 +15,11 @@ public class Pronostico {
     }
 
     public int puntos() {
-        int puntos = 0;
-        ResultadoEnum resultadoPartido = partido.resultado(equipo);
-        if (resultado == resultadoPartido) {
-            puntos = 1;
-        }
+        int puntos = 1;
+//        ResultadoEnum resultadoPartido = partido.resultado(equipo);
+//        if (resultado == resultadoPartido) {
+//            puntos = 1;
+//        }
         return puntos;
     }
 
