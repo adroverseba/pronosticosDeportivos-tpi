@@ -7,11 +7,13 @@ public class Pronostico {
     private Partido partido;
     private Equipo equipo;
     private ResultadoEnum resultado;
+    private Persona persona;
 
-    public Pronostico(Partido partido, Equipo equipo, ResultadoEnum resultado) {
+    public Pronostico(Partido partido, Equipo equipo, ResultadoEnum resultado, Persona persona) {
         this.partido = partido;
         this.equipo = equipo;
         this.resultado = resultado;
+        this.persona = persona;
     }
 
     public int puntos() {
@@ -33,6 +35,10 @@ public class Pronostico {
 
     public ResultadoEnum getResultado() {
         return resultado;
+    }
+
+    public Persona getPersona() {
+        return persona;
     }
 
 }

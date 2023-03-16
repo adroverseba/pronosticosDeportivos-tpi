@@ -1,1 +1,2 @@
-Argentina,GANADOR,Argentina,Croacia
+Manolo,Argentina,GANADOR,Argentina,Croacia
+Jane Doe,Argentina,PERDEDOR,Argentina,Croacia
