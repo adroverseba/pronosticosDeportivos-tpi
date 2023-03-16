@@ -8,8 +8,9 @@ public class Pronostico {
     private Equipo equipo;
     private ResultadoEnum resultado;
 
-    public Pronostico(Partido partido, ResultadoEnum resultado) {
+    public Pronostico(Partido partido, Equipo equipo, ResultadoEnum resultado) {
         this.partido = partido;
+        this.equipo = equipo;
         this.resultado = resultado;
     }
 
@@ -33,6 +34,5 @@ public class Pronostico {
     public ResultadoEnum getResultado() {
         return resultado;
     }
-    
-    
+
 }
