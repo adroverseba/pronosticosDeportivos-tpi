@@ -27,7 +27,16 @@ public class Liga {
     }
 
     //buscar a una persona por nombre
-    public Persona buscarPersonaNombre(String nombrePersona) {
+    public boolean buscarPersonaNombre(String nombrePersona) {
+        for (Persona persona : personas) {
+            if (persona.getNombre().equalsIgnoreCase(nombrePersona)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public Persona obtenerPersonaPorNombre(String nombrePersona) {
         for (Persona persona : personas) {
             if (persona.getNombre().equalsIgnoreCase(nombrePersona)) {
                 return persona;

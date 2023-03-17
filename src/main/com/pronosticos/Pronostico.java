@@ -40,5 +40,10 @@ public class Pronostico {
     public Persona getPersona() {
         return persona;
     }
+    
+//    @Override
+//    public String toString(){
+//        return "Persona: "+persona.getNombre()+" Equipo: "+equipo.getNombre()+", prediccion: "+resultado; 
+//    }
 
 }

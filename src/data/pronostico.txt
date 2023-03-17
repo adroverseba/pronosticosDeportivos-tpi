@@ -1,2 +1,4 @@
 Manolo,Argentina,GANADOR,Argentina,Croacia
+Manolo,Japon,GANADOR,Japon,Alemania
 Jane Doe,Argentina,PERDEDOR,Argentina,Croacia
+Jane Doe,Japon,GANADOR,Japon,Alemania

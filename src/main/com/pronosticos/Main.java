@@ -26,11 +26,11 @@ public class Main {
         String rutaPartidos = "src/data/resultado.txt";
         String rutaPronosticos = "src/data/pronostico.txt";
 
-        List<Persona> personas = new ArrayList<>();
+//        List<Persona> personas = new ArrayList<>();
         Liga liga = new Liga();
         //leer los archivos y crear las instancias necesarias
         List<Partido> partidos = leerPartidos(rutaPartidos);
-        List<Pronostico> pronosticos = leerPronosticos(rutaPronosticos, partidos);
+        List<Pronostico> pronosticos = leerPronosticos(rutaPronosticos, partidos, liga);
 
         //calcular el puntaje de cada pronostico
         Map<String, ResultadoEnum> resultados = new HashMap<>();
@@ -43,10 +43,10 @@ public class Main {
             System.out.println("Equipo: " + entry.getKey() + ", Resultado: " + entry.getValue());
         }
 
-        int puntajeTotal = 0;
+//        int puntajeTotal = 0;
         for (Pronostico pronostico : pronosticos) {
             //almaceno las personas participantes en liga
-            if (!liga.getPersonas().contains((pronostico.getPersona()))) {
+            if (!liga.buscarPersonaNombre(pronostico.getPersona().getNombre())) {
                 liga.agregarPersona(pronostico.getPersona());
             }
 
@@ -65,6 +65,8 @@ public class Main {
 
         //imprimo los puntajes por persona 
         System.out.println("\n\tResultados Finales: ");
+        System.out.println("cantidad de participantes: " + liga.getPersonas().size());
+
         liga.imprimirPuntajes();
     }
 
@@ -97,15 +99,25 @@ public class Main {
     }
 
     //lee el pronostico realizado por personas
-    private static List<Pronostico> leerPronosticos(String rutaArchivo, List<Partido> partidos) {
+    private static List<Pronostico> leerPronosticos(String rutaArchivo, List<Partido> partidos, Liga liga) {
         List<Pronostico> pronosticos = new ArrayList<>();
 
         try {
             BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo));
             String linea;
+            Persona persona;
+            
+            //creo una persona nueva, si ya existe solo la llamo de Liga
             while ((linea = lector.readLine()) != null) {
                 String[] datos = linea.split(",");
-                Persona persona = new Persona(datos[0]);
+                if (!liga.buscarPersonaNombre(datos[0])) {
+                    persona = new Persona(datos[0]);
+                    System.out.println("se crea persona");
+                    liga.agregarPersona(persona);
+                } 
+                else {
+                    persona = liga.obtenerPersonaPorNombre(datos[0]);
+                }
 
                 Equipo equipo = new Equipo(datos[1], "");
                 ResultadoEnum resultadoEnum = ResultadoEnum.valueOf(datos[2]);
@@ -113,11 +125,17 @@ public class Main {
                 if (partido != null) {
                     Pronostico pronostico = new Pronostico(partido, equipo, resultadoEnum, persona);
                     pronosticos.add(pronostico);
+                } else {
+                    System.out.println("Error: no se encontro un partido para la linea.");
                 }
+//                System.out.println(partido);
             }
         } catch (IOException e) {
             System.err.println("Error: " + e);
         }
+        
+//        System.out.println("aca estoy 1");
+
         return pronosticos;
     }
 
