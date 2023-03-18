@@ -29,45 +29,56 @@ public class Main {
 //        List<Persona> personas = new ArrayList<>();
         Liga liga = new Liga();
         //leer los archivos y crear las instancias necesarias
-        List<Partido> partidos = leerPartidos(rutaPartidos);
-        List<Pronostico> pronosticos = leerPronosticos(rutaPronosticos, partidos, liga);
+        List<Ronda> rondas = leerPartidos(rutaPartidos);
 
-        //calcular el puntaje de cada pronostico
-        Map<String, ResultadoEnum> resultados = new HashMap<>();
-        for (Partido partido : partidos) {
-            resultados.put(partido.getEquipo1().getNombre(), partido.resultado(partido.getEquipo1()));
-            resultados.put(partido.getEquipo2().getNombre(), partido.resultado(partido.getEquipo2()));
-        }
+        //verifico los puntajes por Rondas 
+        for (Ronda ronda : rondas) {
+            List<Partido> partidos = ronda.getPartidos();
 
-        for (Map.Entry<String, ResultadoEnum> entry : resultados.entrySet()) {
-            System.out.println("Equipo: " + entry.getKey() + ", Resultado: " + entry.getValue());
-        }
+            List<Pronostico> pronosticos = leerPronosticos(rutaPronosticos, partidos, liga);
 
-//        int puntajeTotal = 0;
-        for (Pronostico pronostico : pronosticos) {
-            //almaceno las personas participantes en liga
-            if (!liga.buscarPersonaNombre(pronostico.getPersona().getNombre())) {
-                liga.agregarPersona(pronostico.getPersona());
+            //calcular el puntaje de cada pronostico
+            //primero mapeo los resultados reales de los partidos con clave igual al equipo y valor a su resultado
+            Map<String, ResultadoEnum> resultados = new HashMap<>();
+            for (Partido partido : partidos) {
+                resultados.put(partido.getEquipo1().getNombre(), partido.resultado(partido.getEquipo1()));
+                resultados.put(partido.getEquipo2().getNombre(), partido.resultado(partido.getEquipo2()));
             }
 
-            //obtengo el equipo de pronostico
-            Equipo equipoPronostico = pronostico.getEquipo();
-            // obtengo el resultado real de los partidos 
-            ResultadoEnum resultadoReal = resultados.get(equipoPronostico.getNombre());
-            System.out.println("\nPrediccion realizada por " + pronostico.getPersona().getNombre() + ", " + equipoPronostico.getNombre() + " " + pronostico.getResultado());
-
-            //verifico si el resultado real es igual al pronosticado, si es asi sumo un punto a la persona que acerto
-            if (resultadoReal == pronostico.getResultado()) {
-                int puntos = pronostico.puntos();
-                pronostico.getPersona().sumarPuntaje(puntos);
+            System.out.println("\nResultados de los partidos: ");
+            for (Map.Entry<String, ResultadoEnum> entry : resultados.entrySet()) {
+                System.out.println("Equipo: " + entry.getKey() + ", Resultado: " + entry.getValue());
             }
+
+            System.out.println("\nPronosticos de los participantes: ");
+            for (Pronostico pronostico : pronosticos) {
+                //almaceno las personas participantes en Liga si no existen en la misma
+                if (!liga.buscarPersonaNombre(pronostico.getPersona().getNombre())) {
+                    liga.agregarPersona(pronostico.getPersona());
+                }
+
+                //obtengo el equipo de pronostico
+                Equipo equipoPronostico = pronostico.getEquipo();
+                // obtengo el resultado real de los partidos usando los equipos pasados en el pronostico 
+                ResultadoEnum resultadoReal = resultados.get(equipoPronostico.getNombre());
+                //imprimo las predicciones realizadas por los participantes
+                System.out.println("Prediccion realizada por " + pronostico.getPersona().getNombre() + ", " + equipoPronostico.getNombre() + " " + pronostico.getResultado());
+
+                //verifico si el resultado real es igual al pronosticado, si es asi sumo un punto a la persona que acerto
+                if (resultadoReal == pronostico.getResultado()) {
+                    int puntos = pronostico.puntos();
+                    pronostico.getPersona().sumarPuntaje(puntos);
+                }
+            }
+
+            //imprimo los puntajes por persona 
+            System.out.println("\n\tRonda " + ronda.getNro() + " terminada\n. ");
+//        System.out.println("cantidad de participantes: " + liga.getPersonas().size());
+
         }
-
-        //imprimo los puntajes por persona 
-        System.out.println("\n\tResultados Finales: ");
-        System.out.println("cantidad de participantes: " + liga.getPersonas().size());
-
+        System.out.println("\t*** RESULTADO FINAL ***");
         liga.imprimirPuntajes();
+
     }
 
     /**
@@ -76,26 +87,58 @@ public class Main {
      * @param rutaArchivo la ruta del archivo que contiene los partidos
      * @return una lista de instancias de Partido
      */
-    private static List<Partido> leerPartidos(String rutaArchivo) {
-        List<Partido> partidos = new ArrayList<>();
+    private static List<Ronda> leerPartidos(String rutaArchivo) {
+//        List<Partido> partidos = new ArrayList<>();
+//        Partido[] partidos = new Partido[4];
+
+        List<Ronda> rondas = new ArrayList<>();
+        Ronda ronda;
         try {
             BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo));
             String linea;
             while ((linea = lector.readLine()) != null) {
                 String[] datos = linea.split(",");
 
-                Equipo equipo1 = new Equipo(datos[0], "");
-                Equipo equipo2 = new Equipo(datos[2], "");
-                int golesEquipo1 = Integer.parseInt(datos[1]);
-                int golesEquipo2 = Integer.parseInt(datos[3]);
+                String numeroRonda = datos[0];
+                Equipo equipo1 = new Equipo(datos[1], "");
+                Equipo equipo2 = new Equipo(datos[3], "");
+                int golesEquipo1 = Integer.parseInt(datos[2]);
+                int golesEquipo2 = Integer.parseInt(datos[4]);
                 Partido partido = new Partido(equipo1, equipo2, golesEquipo1, golesEquipo2);
-                partidos.add(partido);
-            }
 
+                //verifico si la ronda ya existe en la lista de rondas
+                boolean existeRondaEnLista = false;
+                Ronda rondaEncontrada = null;
+                for (Ronda r : rondas) {
+//                    System.out.println("numero de ronda: "+ r.getNro());
+//                    System.out.println("numero de ronda: "+ numeroRonda);
+//                    System.out.println(r.getNro().equals(numeroRonda));
+                    if (r.getNro().equals(numeroRonda)) {
+                        existeRondaEnLista = true;
+                        rondaEncontrada = r;
+//                        System.out.println(rondaEncontrada);
+                        break;
+                    }
+                }
+                if (existeRondaEnLista) {
+                    if (rondaEncontrada != null) {
+                        rondaEncontrada.agregarPartido(partido);
+//                        System.out.println("aca estoy");
+                    }
+                } else {
+                    ronda = new Ronda();
+                    ronda.setNro(numeroRonda);
+                    ronda.agregarPartido(partido);
+                    rondas.add(ronda);
+                }
+
+            }
+            lector.close();
         } catch (IOException e) {
             System.err.println("Error: " + e);
         }
-        return partidos;
+
+        return rondas;
     }
 
     //lee el pronostico realizado por personas
@@ -106,16 +149,15 @@ public class Main {
             BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo));
             String linea;
             Persona persona;
-            
+
             //creo una persona nueva, si ya existe solo la llamo de Liga
             while ((linea = lector.readLine()) != null) {
                 String[] datos = linea.split(",");
                 if (!liga.buscarPersonaNombre(datos[0])) {
                     persona = new Persona(datos[0]);
-                    System.out.println("se crea persona");
+                    System.out.println("se crea participante: " + datos[0]);
                     liga.agregarPersona(persona);
-                } 
-                else {
+                } else {
                     persona = liga.obtenerPersonaPorNombre(datos[0]);
                 }
 
@@ -126,16 +168,15 @@ public class Main {
                     Pronostico pronostico = new Pronostico(partido, equipo, resultadoEnum, persona);
                     pronosticos.add(pronostico);
                 } else {
-                    System.out.println("Error: no se encontro un partido para la linea.");
+//                    System.out.println("Error: no se encontro un partido para la linea.");
                 }
 //                System.out.println(partido);
             }
         } catch (IOException e) {
             System.err.println("Error: " + e);
         }
-        
-//        System.out.println("aca estoy 1");
 
+//        System.out.println("aca estoy 1");
         return pronosticos;
     }
 
