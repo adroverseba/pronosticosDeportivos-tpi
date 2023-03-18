@@ -26,28 +26,22 @@ public class Main {
         String rutaPartidos = "src/data/resultado.txt";
         String rutaPronosticos = "src/data/pronostico.txt";
 
-//        List<Persona> personas = new ArrayList<>();
+        //creo una instancia de Liga donde se almacenaran los participantes del torneo
         Liga liga = new Liga();
         //leer los archivos y crear las instancias necesarias
         List<Ronda> rondas = leerPartidos(rutaPartidos);
 
-        //verifico los puntajes por Rondas 
+        //por cada una de las rondas jugadas realizo lo siguiente 
         for (Ronda ronda : rondas) {
+            //otengo la lista de todos lo partidos jugados
             List<Partido> partidos = ronda.getPartidos();
-
             List<Pronostico> pronosticos = leerPronosticos(rutaPronosticos, partidos, liga);
 
-            //calcular el puntaje de cada pronostico
-            //primero mapeo los resultados reales de los partidos con clave igual al equipo y valor a su resultado
-            Map<String, ResultadoEnum> resultados = new HashMap<>();
-            for (Partido partido : partidos) {
-                resultados.put(partido.getEquipo1().getNombre(), partido.resultado(partido.getEquipo1()));
-                resultados.put(partido.getEquipo2().getNombre(), partido.resultado(partido.getEquipo2()));
-            }
 
             System.out.println("\nResultados de los partidos: ");
-            for (Map.Entry<String, ResultadoEnum> entry : resultados.entrySet()) {
-                System.out.println("Equipo: " + entry.getKey() + ", Resultado: " + entry.getValue());
+
+            for (Partido partido : partidos) {
+                System.out.println(partido.getEquipo1().getNombre() + " " + partido.getGolesEquipo1() + " - " + partido.getGolesEquipo2()+" " + partido.getEquipo2().getNombre());
             }
 
             System.out.println("\nPronosticos de los participantes: ");
@@ -57,27 +51,29 @@ public class Main {
                     liga.agregarPersona(pronostico.getPersona());
                 }
 
-                //obtengo el equipo de pronostico
+                //obtengo el equipo del pronostico
                 Equipo equipoPronostico = pronostico.getEquipo();
-                // obtengo el resultado real de los partidos usando los equipos pasados en el pronostico 
-                ResultadoEnum resultadoReal = resultados.get(equipoPronostico.getNombre());
-                //imprimo las predicciones realizadas por los participantes
-                System.out.println("Prediccion realizada por " + pronostico.getPersona().getNombre() + ", " + equipoPronostico.getNombre() + " " + pronostico.getResultado());
+                //obtengo el resultado del equipo en el pronostico
+                ResultadoEnum resultadoPronostico = pronostico.getResultado();
 
-                //verifico si el resultado real es igual al pronosticado, si es asi sumo un punto a la persona que acerto
-                if (resultadoReal == pronostico.getResultado()) {
-                    int puntos = pronostico.puntos();
+                //obtengo el objeto Partido del Pronostico
+                Partido partidoPronostico = pronostico.getPartido(); 
+                // con el objeto Partido verifico el resultado del equipo1 y lo comparo con el resultado colocado en el pronostico
+                if (resultadoPronostico == partidoPronostico.resultado(partidoPronostico.getEquipo1())) {
+                    //si se cumple condicion entonces sumo puntos a la persona que hizo el pronostico
+                    int puntos = pronostico.puntos(); 
                     pronostico.getPersona().sumarPuntaje(puntos);
                 }
+
+                
+                System.out.println("Prediccion realizada por " + pronostico.getPersona().getNombre() + ", " + equipoPronostico.getNombre() + " " + pronostico.getResultado());
             }
 
-            //imprimo los puntajes por persona 
+            //imprimo el numero de  Ronda
             System.out.println("\n\tRonda " + ronda.getNro() + " terminada\n. ");
-//        System.out.println("cantidad de participantes: " + liga.getPersonas().size());
-
         }
         System.out.println("\t*** RESULTADO FINAL ***");
-        liga.imprimirPuntajes();
+        liga.imprimirPuntajes(); //imprimo el puntaje total por participante
 
     }
 
@@ -167,10 +163,7 @@ public class Main {
                 if (partido != null) {
                     Pronostico pronostico = new Pronostico(partido, equipo, resultadoEnum, persona);
                     pronosticos.add(pronostico);
-                } else {
-//                    System.out.println("Error: no se encontro un partido para la linea.");
                 }
-//                System.out.println(partido);
             }
         } catch (IOException e) {
             System.err.println("Error: " + e);
