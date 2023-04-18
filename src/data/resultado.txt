@@ -1,4 +1,5 @@
 1,Argentina,0,Croacia,2
 1,Japon,3,Alemania,2
 1,Argentina,2,Mexico,0
+1,Mexico,4,Alemania,2
 2,Mexico,4,Alaska,1

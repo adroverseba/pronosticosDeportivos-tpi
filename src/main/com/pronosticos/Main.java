@@ -7,9 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Main {
 
@@ -28,7 +26,7 @@ public class Main {
 
         //creo una instancia de Liga donde se almacenaran los participantes del torneo
         Liga liga = new Liga();
-        //leer los archivos y crear las instancias necesarias
+        //leer los archivos y crear las instancias necesarias, primero leo el archivo con todos los resultados
         List<Ronda> rondas = leerPartidos(rutaPartidos);
 
         //por cada una de las rondas jugadas realizo lo siguiente 
@@ -37,15 +35,21 @@ public class Main {
             List<Partido> partidos = ronda.getPartidos();
             List<Pronostico> pronosticos = leerPronosticos(rutaPronosticos, partidos, liga);
 
-
             System.out.println("\nResultados de los partidos: ");
 
             for (Partido partido : partidos) {
-                System.out.println(partido.getEquipo1().getNombre() + " " + partido.getGolesEquipo1() + " - " + partido.getGolesEquipo2()+" " + partido.getEquipo2().getNombre());
+                System.out.println(partido.getEquipo1().getNombre() + " " + partido.getGolesEquipo1() + " - " + partido.getGolesEquipo2() + " " + partido.getEquipo2().getNombre());
             }
 
             System.out.println("\nPronosticos de los participantes: ");
+            int contadorDePartidos = 0;
+
             for (Pronostico pronostico : pronosticos) {
+                if (contadorDePartidos == 4) {
+                    contadorDePartidos = 0;
+                }
+                contadorDePartidos++;
+
                 //almaceno las personas participantes en Liga si no existen en la misma
                 if (!liga.buscarPersonaNombre(pronostico.getPersona().getNombre())) {
                     liga.agregarPersona(pronostico.getPersona());
@@ -57,16 +61,26 @@ public class Main {
                 ResultadoEnum resultadoPronostico = pronostico.getResultado();
 
                 //obtengo el objeto Partido del Pronostico
-                Partido partidoPronostico = pronostico.getPartido(); 
+                Partido partidoPronostico = pronostico.getPartido();
                 // con el objeto Partido verifico el resultado del equipo1 y lo comparo con el resultado colocado en el pronostico
+
                 if (resultadoPronostico == partidoPronostico.resultado(partidoPronostico.getEquipo1())) {
                     //si se cumple condicion entonces sumo puntos a la persona que hizo el pronostico
-                    int puntos = pronostico.puntos(); 
+                    int puntos = pronostico.puntos();
+
                     pronostico.getPersona().sumarPuntaje(puntos);
                 }
-
-                
                 System.out.println("Prediccion realizada por " + pronostico.getPersona().getNombre() + ", " + equipoPronostico.getNombre() + " " + pronostico.getResultado());
+
+//                System.out.println("puntos de persona " + pronostico.getPersona().getPuntaje());
+//                System.out.println("puntos por fase " + puntosPorFase);
+                System.out.println("Contador de rondas " + contadorDePartidos);
+                if (pronostico.getPersona().getPuntaje() == 4 && contadorDePartidos == 1) {
+                    System.out.println("aca estoy");
+                    System.out.println("La persona " + pronostico.getPersona().getNombre() + " ha acertado todos los resultados de la Fase" + ronda.getNro() + ". Gana 3 puntos extras\n");
+                    pronostico.getPersona().sumarPuntaje(3);
+                }
+
             }
 
             //imprimo el numero de  Ronda
@@ -106,9 +120,6 @@ public class Main {
                 boolean existeRondaEnLista = false;
                 Ronda rondaEncontrada = null;
                 for (Ronda r : rondas) {
-//                    System.out.println("numero de ronda: "+ r.getNro());
-//                    System.out.println("numero de ronda: "+ numeroRonda);
-//                    System.out.println(r.getNro().equals(numeroRonda));
                     if (r.getNro().equals(numeroRonda)) {
                         existeRondaEnLista = true;
                         rondaEncontrada = r;

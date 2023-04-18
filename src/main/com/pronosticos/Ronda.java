@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Ronda {
-    
+
     private String nro;
-    private List<Partido> partidos=new ArrayList<>();
-    
+    private List<Partido> partidos = new ArrayList<>();
+
     public Ronda() {
     }
-    
+
     public Ronda(String nro, List<Partido> partidos) {
         this.nro = nro;
         this.partidos = partidos;
@@ -27,19 +27,18 @@ public class Ronda {
     public String getNro() {
         return nro;
     }
-    
+
     public List<Partido> getPartidos() {
         return partidos;
     }
-    
+
     public void setNro(String nro) {
         this.nro = nro;
     }
-    
+
     public void setPartidos(List<Partido> partidos) {
         this.partidos = partidos;
     }
-    
 
 //    public int puntos() {
 //        int puntosTotales = 0;
