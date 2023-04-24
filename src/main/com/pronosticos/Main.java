@@ -13,14 +13,8 @@ public class Main {
 
     public static void main(String[] args) {
         //verificar que se pasen los parametros necesarios
-//        if (args.length < 2) {
-//            System.out.println("Debe espicificar el nombre de los archivos de pronostico y resultado.");
-//            return;
-//        }
 
         //obtengo las rutas de los archivos
-//        String rutaPartidos = args[0];
-//        String rutaPronosticos = args[1];
         String rutaPartidos = "src/data/resultado.txt";
         String rutaPronosticos = "src/data/pronostico.txt";
 
@@ -72,12 +66,11 @@ public class Main {
                 }
                 System.out.println("Prediccion realizada por " + pronostico.getPersona().getNombre() + ", " + equipoPronostico.getNombre() + " " + pronostico.getResultado());
 
-//                System.out.println("puntos de persona " + pronostico.getPersona().getPuntaje());
-//                System.out.println("puntos por fase " + puntosPorFase);
-                System.out.println("Contador de rondas " + contadorDePartidos);
-                if (pronostico.getPersona().getPuntaje() == 4 && contadorDePartidos == 1) {
-                    System.out.println("aca estoy");
-                    System.out.println("La persona " + pronostico.getPersona().getNombre() + " ha acertado todos los resultados de la Fase" + ronda.getNro() + ". Gana 3 puntos extras\n");
+
+//                System.out.println("Contador de partidos " + contadorDePartidos);
+                if (pronostico.getPersona().getPuntaje() == 4 && contadorDePartidos == 4) {
+//                    System.out.println("aca estoy");
+                    System.out.println("\nLa persona " + pronostico.getPersona().getNombre() + " ha acertado todos los resultados de la Fase" + ronda.getNro() + ". Gana 3 puntos extras\n");
                     pronostico.getPersona().sumarPuntaje(3);
                 }
 
@@ -92,7 +85,7 @@ public class Main {
     }
 
     /**
-     * Lee los partidos desde un archivo y crea las instancias correspondientes.
+     * Lee los partidos desde un archivo y crea las instancias correspondientes. resultado.txt
      *
      * @param rutaArchivo la ruta del archivo que contiene los partidos
      * @return una lista de instancias de Partido
@@ -104,7 +97,7 @@ public class Main {
         List<Ronda> rondas = new ArrayList<>();
         Ronda ronda;
         try {
-            BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo));
+            BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo));//lector de archivo
             String linea;
             while ((linea = lector.readLine()) != null) {
                 String[] datos = linea.split(",");
@@ -119,7 +112,7 @@ public class Main {
                 //verifico si la ronda ya existe en la lista de rondas
                 boolean existeRondaEnLista = false;
                 Ronda rondaEncontrada = null;
-                for (Ronda r : rondas) {
+                for (Ronda r : rondas) { //bucle for each
                     if (r.getNro().equals(numeroRonda)) {
                         existeRondaEnLista = true;
                         rondaEncontrada = r;
@@ -140,7 +133,7 @@ public class Main {
                 }
 
             }
-            lector.close();
+            lector.close();//cierre lector de archivo
         } catch (IOException e) {
             System.err.println("Error: " + e);
         }
@@ -148,7 +141,7 @@ public class Main {
         return rondas;
     }
 
-    //lee el pronostico realizado por personas
+    //lee el pronostico realizado por personas - conexion base de datos
     private static List<Pronostico> leerPronosticos(String rutaArchivo, List<Partido> partidos, Liga liga) {
         List<Pronostico> pronosticos = new ArrayList<>();
 

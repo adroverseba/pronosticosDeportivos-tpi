@@ -5,7 +5,11 @@
         <group>
             <file>file:/C:/Users/adrov/Documents/NetBeansProjects/pronosticosDeportivos-tpi/src/data/pronostico.txt</file>
             <file>file:/C:/Users/adrov/Documents/NetBeansProjects/pronosticosDeportivos-tpi/src/data/resultado.txt</file>
+            <file>file:/C:/Users/adrov/Documents/NetBeansProjects/pronosticosDeportivos-tpi/src/main/com/pronosticos/Ronda.java</file>
             <file>file:/C:/Users/adrov/Documents/NetBeansProjects/pronosticosDeportivos-tpi/src/main/com/pronosticos/Main.java</file>
+            <file>file:/C:/Users/adrov/Documents/NetBeansProjects/pronosticosDeportivos-tpi/src/main/com/pronosticos/Pronostico.java</file>
+            <file>file:/C:/Users/adrov/Documents/NetBeansProjects/pronosticosDeportivos-tpi/src/main/com/pronosticos/Partido.java</file>
+            <file>file:/C:/Users/adrov/Documents/NetBeansProjects/pronosticosDeportivos-tpi/src/main/com/pronosticos/Liga.java</file>
         </group>
     </open-files>
 </project-private>
