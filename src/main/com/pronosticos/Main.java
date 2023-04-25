@@ -3,20 +3,42 @@
  */
 package main.com.pronosticos;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.DriverManager;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 public class Main {
 
-    public static void main(String[] args) {
-        //verificar que se pasen los parametros necesarios
+    public static final String url = "jdbc:mysql://localhost:3306/pronostico_deportivo?autoReconnect=true&useSSL=false";
+    public static final String user = "root";
+    public static final String password = "root";
+    static PreparedStatement ps;
+    static ResultSet rs;
 
+    public static Connection getConnection() {
+        Connection conexion = null;
+        try {
+            conexion = DriverManager.getConnection(url, user, password);
+            JOptionPane.showMessageDialog(null, "conexion exitosa");
+        } catch (Exception e) {
+            System.err.println("Error, " + e);
+        }
+        return conexion;
+    }
+
+    public static void main(String[] args) {
+
+        //verificar que se pasen los parametros necesarios
         //obtengo las rutas de los archivos
         String rutaPartidos = "src/data/resultado.txt";
-        String rutaPronosticos = "src/data/pronostico.txt";
+        String rutaPronosticos = "src/data/pronostico.txt"; //esto pasa a ser leido por la db
 
         //creo una instancia de Liga donde se almacenaran los participantes del torneo
         Liga liga = new Liga();
@@ -66,7 +88,6 @@ public class Main {
                 }
                 System.out.println("Prediccion realizada por " + pronostico.getPersona().getNombre() + ", " + equipoPronostico.getNombre() + " " + pronostico.getResultado());
 
-
 //                System.out.println("Contador de partidos " + contadorDePartidos);
                 if (pronostico.getPersona().getPuntaje() == 4 && contadorDePartidos == 4) {
 //                    System.out.println("aca estoy");
@@ -85,7 +106,8 @@ public class Main {
     }
 
     /**
-     * Lee los partidos desde un archivo y crea las instancias correspondientes. resultado.txt
+     * Lee los partidos desde un archivo y crea las instancias correspondientes.
+     * resultado.txt
      *
      * @param rutaArchivo la ruta del archivo que contiene los partidos
      * @return una lista de instancias de Partido
@@ -144,33 +166,37 @@ public class Main {
     //lee el pronostico realizado por personas - conexion base de datos
     private static List<Pronostico> leerPronosticos(String rutaArchivo, List<Partido> partidos, Liga liga) {
         List<Pronostico> pronosticos = new ArrayList<>();
+        Connection conexion = null;
 
         try {
-            BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo));
-            String linea;
+            conexion = getConnection();
+            ps = conexion.prepareStatement("Select * from pronostico");
+            rs = ps.executeQuery();
+//            BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo));
+//            String linea;
             Persona persona;
 
             //creo una persona nueva, si ya existe solo la llamo de Liga
-            while ((linea = lector.readLine()) != null) {
-                String[] datos = linea.split(",");
-                if (!liga.buscarPersonaNombre(datos[0])) {
-                    persona = new Persona(datos[0]);
-                    System.out.println("se crea participante: " + datos[0]);
+            while (rs.next()) {
+//                String[] datos = linea.split(",");
+                if (!liga.buscarPersonaNombre(rs.getString("persona"))) {
+                    persona = new Persona(rs.getString("persona"));
+                    System.out.println("se crea participante: " + rs.getString("persona"));
                     liga.agregarPersona(persona);
                 } else {
-                    persona = liga.obtenerPersonaPorNombre(datos[0]);
+                    persona = liga.obtenerPersonaPorNombre(rs.getString("persona"));
                 }
 
-                Equipo equipo = new Equipo(datos[1], "");
-                ResultadoEnum resultadoEnum = ResultadoEnum.valueOf(datos[2]);
-                Partido partido = buscarPartido(partidos, datos[3], datos[4]);
+                Equipo equipo = new Equipo(rs.getString("equipo_seleccionado"), "");
+                ResultadoEnum resultadoEnum = ResultadoEnum.valueOf(rs.getString("resultado_equipo_seleccionado"));
+                Partido partido = buscarPartido(partidos, rs.getString("equipo1"), rs.getString("equipo2"));
                 if (partido != null) {
                     Pronostico pronostico = new Pronostico(partido, equipo, resultadoEnum, persona);
                     pronosticos.add(pronostico);
                 }
             }
-        } catch (IOException e) {
-            System.err.println("Error: " + e);
+        } catch (Exception e) {
+            System.err.println("Error, " + e);
         }
 
 //        System.out.println("aca estoy 1");
