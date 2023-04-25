@@ -26,7 +26,7 @@ public class Main {
         Connection conexion = null;
         try {
             conexion = DriverManager.getConnection(url, user, password);
-            JOptionPane.showMessageDialog(null, "conexion exitosa");
+            JOptionPane.showMessageDialog(null, "conexion exitosa a DB");
         } catch (Exception e) {
             System.err.println("Error, " + e);
         }
@@ -38,7 +38,7 @@ public class Main {
         //verificar que se pasen los parametros necesarios
         //obtengo las rutas de los archivos
         String rutaPartidos = "src/data/resultado.txt";
-        String rutaPronosticos = "src/data/pronostico.txt"; //esto pasa a ser leido por la db
+//        String rutaPronosticos = "src/data/pronostico.txt"; //esto pasa a ser leido por la db
 
         //creo una instancia de Liga donde se almacenaran los participantes del torneo
         Liga liga = new Liga();
@@ -49,7 +49,7 @@ public class Main {
         for (Ronda ronda : rondas) {
             //otengo la lista de todos lo partidos jugados
             List<Partido> partidos = ronda.getPartidos();
-            List<Pronostico> pronosticos = leerPronosticos(rutaPronosticos, partidos, liga);
+            List<Pronostico> pronosticos = leerPronosticos( partidos, liga);
 
             System.out.println("\nResultados de los partidos: ");
 
@@ -164,7 +164,7 @@ public class Main {
     }
 
     //lee el pronostico realizado por personas - conexion base de datos
-    private static List<Pronostico> leerPronosticos(String rutaArchivo, List<Partido> partidos, Liga liga) {
+    private static List<Pronostico> leerPronosticos( List<Partido> partidos, Liga liga) {
         List<Pronostico> pronosticos = new ArrayList<>();
         Connection conexion = null;
 
@@ -172,13 +172,10 @@ public class Main {
             conexion = getConnection();
             ps = conexion.prepareStatement("Select * from pronostico");
             rs = ps.executeQuery();
-//            BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo));
-//            String linea;
             Persona persona;
 
             //creo una persona nueva, si ya existe solo la llamo de Liga
             while (rs.next()) {
-//                String[] datos = linea.split(",");
                 if (!liga.buscarPersonaNombre(rs.getString("persona"))) {
                     persona = new Persona(rs.getString("persona"));
                     System.out.println("se crea participante: " + rs.getString("persona"));
@@ -186,7 +183,6 @@ public class Main {
                 } else {
                     persona = liga.obtenerPersonaPorNombre(rs.getString("persona"));
                 }
-
                 Equipo equipo = new Equipo(rs.getString("equipo_seleccionado"), "");
                 ResultadoEnum resultadoEnum = ResultadoEnum.valueOf(rs.getString("resultado_equipo_seleccionado"));
                 Partido partido = buscarPartido(partidos, rs.getString("equipo1"), rs.getString("equipo2"));
@@ -199,7 +195,6 @@ public class Main {
             System.err.println("Error, " + e);
         }
 
-//        System.out.println("aca estoy 1");
         return pronosticos;
     }
 
